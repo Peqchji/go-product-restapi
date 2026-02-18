@@ -5,63 +5,46 @@ import (
 )
 
 type Product struct {
-	id          uuid.UUID `json:"id"`
-	name        string    `json:"name"`
-	description *string   `json:"description"`
-	price       float64   `json:"price"`
-	salePrice   *float64  `json:"sale_price"`
+	ID          *uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description"`
+	Price       float64   `json:"price"`
+	SalePrice   *float64  `json:"sale_price"`
 }
 
-func NewProduct(name string, description string, price float64, salePrice float64) *Product {
+func NewProduct(name string, description *string, price float64, salePrice *float64) *Product {
 	return &Product{
-		id:          uuid.New(),
-		name:        name,
-		description: &description,
-		price:       price,
-		salePrice:   &salePrice,
+		Name:        name,
+		Description: description,
+		Price:       price,
+		SalePrice:   salePrice,
 	}
 }
 
-func (p *Product) ID() uuid.UUID {
-	return p.id
-}
-
-func (p *Product) Name() string {
-	return p.name
-}
-
-func (p *Product) Description() *string {
-	return p.description
-}
-
-func (p *Product) Price() float64 {
-	return p.price
-}
-
-func (p *Product) SalePrice() *float64 {
-	return p.salePrice
+func (p *Product) SetId(id *uuid.UUID) {
+	p.ID = id
 }
 
 func (p *Product) SetName(name string) {
-	p.name = name
+	p.Name = name
 }
 
 func (p *Product) SetDescription(description string) {
-	p.description = &description
+	p.Description = &description
 }
 
 func (p *Product) SetPrice(price float64) {
-	p.price = price
+	p.Price = price
 }
 
 func (p *Product) SetSalePrice(salePrice float64) {
-	p.salePrice = &salePrice
+	p.SalePrice = &salePrice
 }
 
 func (p *Product) RemoveDescription() {
-	p.description = nil
+	p.Description = nil
 }
 
 func (p *Product) RemoveSalePrice() {
-	p.salePrice = nil
+	p.SalePrice = nil
 }

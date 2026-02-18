@@ -15,31 +15,24 @@ func NewPostgresProductMapper() *PostgresProductMapper {
 
 func (p *PostgresProductMapper) ToDTO(product entity.Product) ProductRow {
 	return ProductRow{
-		ID:          product.ID(),
-		Name:        product.Name(),
-		Description: product.Description(),
-		Price:       product.Price(),
-		SalePrice:   product.SalePrice(),
+		ID:          product.ID,
+		Name:        product.Name,
+		Description: product.Description,
+		Price:       product.Price,
+		SalePrice:   product.SalePrice,
 	}
 }
 
 func (p *PostgresProductMapper) ToEntity(productDTO ProductRow) *entity.Product {
-	var desc string
-	var salePrice float64
-
-	if productDTO.Description != nil {
-		desc = *productDTO.Description
-	}
-
-	if productDTO.SalePrice != nil {
-		salePrice = *productDTO.SalePrice
-	}
-
-	return entity.NewProduct(
+	product := entity.NewProduct(
 		productDTO.Name,
-		desc,
+		productDTO.Description,
 		productDTO.Price,
-		salePrice,
+		productDTO.SalePrice,
 	)
+
+	product.SetId(productDTO.ID)
+
+	return product
 }
 

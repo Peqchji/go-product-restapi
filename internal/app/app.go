@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/labstack/echo/v5"
 
 	"go-product-restapi/internal/config"
@@ -57,12 +59,16 @@ func (a *App) Run(conf *config.Config) error {
 
 	productMapper := productrepository.NewPostgresProductMapper()
 	productRepo := productrepository.NewPostgresProductRepository(db, a.globalLogger, productMapper)
-	productService := productusecase.NewProductUseCase(productRepo)
+	productService := productusecase.NewProductUseCase(a.globalLogger, productRepo)
 	productHandler := producthandler.NewProductHandler(productService)
 
-	echo := echo.New()
-	echo.POST("/products", productHandler.CreateProduct())
-	echo.PATCH("/products/:id", productHandler.PatchProduct())
+	echoServer := echo.New()
+	echoServer.POST("/products", productHandler.CreateProduct())
+	echoServer.PATCH("/products/:id", productHandler.PatchProduct())
+	echoServer.GET("/products/:id", productHandler.GetProduct())
+	echoServer.GET("/health", func(c *echo.Context) error {
+		return c.NoContent(http.StatusOK)
+	})
 
-	return echo.Start(fmt.Sprintf(":%s", conf.ServerPort))
+	return echoServer.Start(fmt.Sprintf(":%s", conf.ServerPort))
 }

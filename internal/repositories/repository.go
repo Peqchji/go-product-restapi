@@ -11,5 +11,5 @@ import (
 
 type ProductRepository interface {
 	GetById(ctx context.Context, id uuid.UUID) (*entity.Product, error)
-	Save(ctx context.Context, product entity.Product) error
+	Save(ctx context.Context, product entity.Product) (*entity.Product, error)
 }
