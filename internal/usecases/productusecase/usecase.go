@@ -11,18 +11,18 @@ import (
 )
 
 type CreateProductRequest struct {
-	Name        string   `json:"name"`
-	Description *string  `json:"description,omitempty"`
-	SalePrice   *float64 `json:"sale_price,omitempty"`
-	Price       float64  `json:"price"`
+	Name        string   `json:"name" validate:"required" example:"Primo Product"`
+	Description *string  `json:"description,omitempty" example:"Primo Fresh mineral water"`
+	SalePrice   *float64 `json:"sale_price,omitempty" example:"9.99"`
+	Price       float64  `json:"price" validate:"required" example:"12.99"`
 }
 
 type UpdateProductRequest struct {
-	ID          uuid.UUID `json:"id"`
-	Name        *string   `json:"name,omitempty"`
-	Description *string   `json:"description,omitempty"`
-	SalePrice   *float64 `json:"sale_price,omitempty"`
-	Price       *float64 `json:"price,omitempty"`
+	ID          uuid.UUID `json:"id" swaggerignore:"true"`
+	Name        *string   `json:"name,omitempty" example:"Primo Product"`
+	Description *string   `json:"description,omitempty" example:"Primo Fresh mineral water"`
+	SalePrice   *float64  `json:"sale_price,omitempty" example:"9.99"`
+	Price       *float64  `json:"price,omitempty" example:"12.99"`
 
 	IsSetDescription bool `json:"-"`
 	IsSetSalePrice   bool `json:"-"`

@@ -25,6 +25,17 @@ func NewProductHandler(productUseCase productusecase.IProductUseCase) *ProductHa
 	}
 }
 
+// @Summary Get Product
+// @Description Get a product by ID
+// @Tags products
+// @ID get-product
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Product ID (UUID)"
+// @Success 200 {object} producthandler.ProductSuccessResponse
+// @Failure 400 {object} handler.BaseAPIResponse
+// @Failure 500 {object} handler.BaseAPIResponse
+// @Router /products/{id} [get]
 func (h *ProductHandler) GetProduct() echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		idStr := c.Param("id")
@@ -69,6 +80,18 @@ func (h *ProductHandler) GetProduct() echo.HandlerFunc {
 	}
 }
 
+// @Summary Patch Product
+// @Description Patch a product by ID
+// @Tags products
+// @ID patch-product
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Product ID (UUID)"
+// @Param product body productusecase.UpdateProductRequest true "Product Request"
+// @Success 200 {object} handler.BaseAPIResponse
+// @Failure 400 {object} handler.BaseAPIResponse
+// @Failure 500 {object} handler.BaseAPIResponse
+// @Router /products/{id} [patch]
 func (h *ProductHandler) PatchProduct() echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		idStr := c.Param("id")
@@ -79,8 +102,8 @@ func (h *ProductHandler) PatchProduct() echo.HandlerFunc {
 				handler.BaseAPIResponse{
 					Successful: false,
 					ErrorCode:  utils.ToPointer(ErrCodeInvalidRequest),
-            })
-        }
+				})
+		}
 
 		bodyBytes, err := io.ReadAll(c.Request().Body)
 		if err != nil {
@@ -122,29 +145,29 @@ func (h *ProductHandler) PatchProduct() echo.HandlerFunc {
 
 		req.ID = id
 		req.IsSetDescription = isDescriptionPresent
-        req.IsSetSalePrice = isSalePricePresent
+		req.IsSetSalePrice = isSalePricePresent
 
-        if err := h.validateUpdateProductRequest(&req); err != nil {
-            return c.JSON(http.StatusBadRequest, handler.BaseAPIResponse{
-                Successful: false,
-                ErrorCode:  utils.ToPointer(ErrCodeInvalidRequest),
-            })
-        }
+		if err := h.validateUpdateProductRequest(&req); err != nil {
+			return c.JSON(http.StatusBadRequest, handler.BaseAPIResponse{
+				Successful: false,
+				ErrorCode:  utils.ToPointer(ErrCodeInvalidRequest),
+			})
+		}
 
-        ctx := c.Request().Context()
-        if err := h.productUseCase.UpdateProduct(ctx, &req); err != nil {
-            errCode := ErrCodeUpdateProductFailed
-            if errors.Is(err, productusecase.ErrProductNotFound) {
-                errCode = ErrProductNotFound
-            }
+		ctx := c.Request().Context()
+		if err := h.productUseCase.UpdateProduct(ctx, &req); err != nil {
+			errCode := ErrCodeUpdateProductFailed
+			if errors.Is(err, productusecase.ErrProductNotFound) {
+				errCode = ErrProductNotFound
+			}
 
-            return c.JSON(http.StatusInternalServerError, handler.BaseAPIResponse{
-                Successful: false,
-                ErrorCode:  utils.ToPointer(errCode),
-            })
-        }
+			return c.JSON(http.StatusInternalServerError, handler.BaseAPIResponse{
+				Successful: false,
+				ErrorCode:  utils.ToPointer(errCode),
+			})
+		}
 
-        return c.JSON(
+		return c.JSON(
 			http.StatusOK,
 			handler.BaseAPIResponse{
 				Successful: true,
@@ -169,6 +192,17 @@ func (h *ProductHandler) validateUpdateProductRequest(req *productusecase.Update
 	return nil
 }
 
+// @Summary Create Product
+// @Description Create a new product
+// @Tags products
+// @ID create-product
+// @Accept  json
+// @Produce  json
+// @Param product body productusecase.CreateProductRequest true "Product Request"
+// @Success 200 {object} producthandler.ProductSuccessResponse
+// @Failure 400 {object} handler.BaseAPIResponse
+// @Failure 500 {object} handler.BaseAPIResponse
+// @Router /products [post]
 func (h *ProductHandler) CreateProduct() echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		ctx := c.Request().Context()

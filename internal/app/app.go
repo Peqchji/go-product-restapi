@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	echoSwagger "github.com/swaggo/echo-swagger"
 
 	"go-product-restapi/internal/config"
 	"go-product-restapi/internal/handler/producthandler"
@@ -66,6 +67,8 @@ func (a *App) Run(conf *config.Config) error {
 	echoServer.POST("/products", productHandler.CreateProduct())
 	echoServer.PATCH("/products/:id", productHandler.PatchProduct())
 	echoServer.GET("/products/:id", productHandler.GetProduct())
+
+	echoServer.GET("/api-docs/*", echoSwagger.WrapHandler)
 	echoServer.GET("/health", func(c *echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	})
