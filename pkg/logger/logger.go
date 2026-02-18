@@ -1,11 +1,8 @@
 package logger
 
 import (
-	"fmt"
 	"os"
-	"path"
 	"sync"
-	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -17,56 +14,47 @@ type ILogger interface {
 	Warn(message string, args ...any)
 	Error(message string, args ...any)
 	Fatal(message string, args ...any)
+
+	Named(name string) ILogger
+}
+
+type GlobalLoggerFactory struct {
+	globalLogger *Logger
+	once         sync.Once
+}
+
+func NewGlobalLoggerFactory() *GlobalLoggerFactory {
+	return &GlobalLoggerFactory{}
+}
+
+func (lf *GlobalLoggerFactory) GetGlobalLogger() *Logger {
+	lf.once.Do(func() {
+		pe := zap.NewProductionEncoderConfig()
+		pe.EncodeTime = zapcore.ISO8601TimeEncoder
+		consoleEncoder := zapcore.NewJSONEncoder(pe)
+
+		core := zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zap.DebugLevel)
+		l := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))
+
+		lf.globalLogger = &Logger{
+			logger: l,
+		}
+	})
+
+	return lf.globalLogger
 }
 
 type Logger struct {
-	logger  *zap.Logger
-	once    sync.Once
-	filePtr *os.File
+	logger *zap.Logger
+	name   string
 }
 
 var _ ILogger = (*Logger)(nil)
 
-func NewLogger(logFilePath string) (*Logger, error) {
-	now := time.Now()
-	logfile := path.Join(
-		logFilePath,
-		fmt.Sprintf("%s.log", now.Format("2006-01-02")),
-	)
-
-	file, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return nil, err
-	}
-
-	pe := zap.NewProductionEncoderConfig()
-
-	fileEncoder := zapcore.NewJSONEncoder(pe)
-	pe.EncodeTime = zapcore.ISO8601TimeEncoder
-	consoleEncoder := zapcore.NewConsoleEncoder(pe)
-
-	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.ErrorLevel
-	})
-
-	core := zapcore.NewTee(
-		zapcore.NewCore(fileEncoder, zapcore.AddSync(file), highPriority),
-		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), highPriority),
-	)
-
-	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zap.WarnLevel))
-
+func (l *Logger) Named(name string) ILogger {
 	return &Logger{
-		logger:  logger,
-		filePtr: file,
-	}, nil
-}
-
-func (l *Logger) Shutdown() {
-	l.once.Do(func() {
-		l.logger.Sync()
-		l.filePtr.Close()
-	})
+		logger: l.logger.Named(name),
+	}
 }
 
 func (l *Logger) Debug(message string, args ...any) {
@@ -87,4 +75,5 @@ func (l *Logger) Error(message string, args ...any) {
 
 func (l *Logger) Fatal(message string, args ...any) {
 	l.logger.Fatal(message, zap.Any("args", args))
+	os.Exit(1)
 }
