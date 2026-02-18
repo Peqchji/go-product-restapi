@@ -3,8 +3,10 @@ module go-product-restapi
 go 1.25.1
 
 require (
+	github.com/joho/godotenv v1.5.1
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.8.0
+	github.com/labstack/echo/v5 v5.0.4
 	go.uber.org/zap v1.27.1
 )
 

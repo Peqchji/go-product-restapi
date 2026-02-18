@@ -20,20 +20,19 @@ func (p *PostgresProductMapper) ToDTO(product entity.Product) ProductRow {
 		Description: product.Description,
 		Price:       product.Price,
 		SalePrice:   product.SalePrice,
-		CreatedAt:   product.CreatedAt,
-		UpdatedAt:   product.UpdatedAt,
 	}
 }
 
-func (p *PostgresProductMapper) ToEntity(productDTO ProductRow) entity.Product {
-	return entity.Product{
-		ID:          productDTO.ID,
-		Name:        productDTO.Name,
-		Description: productDTO.Description,
-		Price:       productDTO.Price,
-		SalePrice:   productDTO.SalePrice,
-		CreatedAt:   productDTO.CreatedAt,
-		UpdatedAt:   productDTO.UpdatedAt,
-	}
+func (p *PostgresProductMapper) ToEntity(productDTO ProductRow) *entity.Product {
+	product := entity.NewProduct(
+		productDTO.Name,
+		productDTO.Description,
+		productDTO.Price,
+		productDTO.SalePrice,
+	)
+
+	product.SetId(productDTO.ID)
+
+	return product
 }
 

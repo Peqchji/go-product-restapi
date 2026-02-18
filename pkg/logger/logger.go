@@ -16,6 +16,7 @@ type ILogger interface {
 	Fatal(message string, args ...any)
 
 	Named(name string) ILogger
+	Shutdown() error
 }
 
 type GlobalLoggerFactory struct {
@@ -76,4 +77,8 @@ func (l *Logger) Error(message string, args ...any) {
 func (l *Logger) Fatal(message string, args ...any) {
 	l.logger.Fatal(message, zap.Any("args", args))
 	os.Exit(1)
+}
+
+func (l *Logger) Shutdown() error {
+	return l.logger.Sync()
 }

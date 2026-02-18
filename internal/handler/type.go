@@ -1,7 +1,8 @@
 package handler
 
+
 type BaseAPIResponse struct {
 	Successful bool   `json:"successful"`
-	ErrorCode  string `json:"error_code"`
-	Data       *any   `json:"data,omitempty"`
+	ErrorCode  *string `json:"error_code,omitempty"`
+	Data       any    `json:"data,omitempty"`
 }
