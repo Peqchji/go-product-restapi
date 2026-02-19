@@ -1,0 +1,176 @@
+basePath: /
+definitions:
+  handler.BaseAPIResponse:
+    properties:
+      data: {}
+      error_code:
+        type: string
+      successful:
+        type: boolean
+    type: object
+  producthandler.ProductResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      sale_price:
+        type: number
+    type: object
+  producthandler.ProductSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/producthandler.ProductResponse'
+      error_code:
+        type: string
+      successful:
+        type: boolean
+    type: object
+  productusecase.CreateProductRequest:
+    properties:
+      description:
+        example: Primo Fresh mineral water
+        type: string
+      name:
+        example: Primo Product
+        type: string
+      price:
+        example: 12.99
+        type: number
+      sale_price:
+        example: 9.99
+        type: number
+    required:
+    - name
+    - price
+    type: object
+  productusecase.UpdateProductRequest:
+    properties:
+      description:
+        example: Primo Fresh mineral water
+        type: string
+      name:
+        example: Primo Product
+        type: string
+      price:
+        example: 12.99
+        type: number
+      sale_price:
+        example: 9.99
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server Petstore server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /products:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      operationId: create-product
+      parameters:
+      - description: Product Request
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/productusecase.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/producthandler.ProductSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.BaseAPIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.BaseAPIResponse'
+      summary: Create Product
+      tags:
+      - products
+  /products/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a product by ID
+      operationId: get-product
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/producthandler.ProductSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.BaseAPIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.BaseAPIResponse'
+      summary: Get Product
+      tags:
+      - products
+    patch:
+      consumes:
+      - application/json
+      description: Patch a product by ID
+      operationId: patch-product
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product Request
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/productusecase.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.BaseAPIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.BaseAPIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.BaseAPIResponse'
+      summary: Patch Product
+      tags:
+      - products
+swagger: "2.0"

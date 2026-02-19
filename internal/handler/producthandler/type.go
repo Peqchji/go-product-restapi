@@ -7,3 +7,11 @@ type ProductResponse struct {
 	SalePrice   *float64 `json:"sale_price,omitempty"`
 	Price       float64  `json:"price"`
 }
+
+
+// for swagger
+type ProductSuccessResponse struct {
+	Successful bool            `json:"successful"`
+	ErrorCode  *string         `json:"error_code,omitempty"`
+	Data       ProductResponse `json:"data"`
+}
