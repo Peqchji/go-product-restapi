@@ -177,16 +177,12 @@ func (h *ProductHandler) PatchProduct() echo.HandlerFunc {
 }
 
 func (h *ProductHandler) validateUpdateProductRequest(req *productusecase.UpdateProductRequest) error {
-	if req.Name != nil && len(*req.Name) == 0 {
-		return errors.New("name is required")
+	if req.Price != nil && *req.Price < 0 {
+		return errors.New("price must be greater or equal to 0")
 	}
 
-	if req.Price != nil && *req.Price <= 0 {
-		return errors.New("price must be greater than 0")
-	}
-
-	if req.SalePrice != nil && *req.SalePrice <= 0 {
-		return errors.New("sale price must be greater than 0")
+	if req.SalePrice != nil && *req.SalePrice < 0 {
+		return errors.New("sale price must be greater or equal to 0")
 	}
 
 	return nil
@@ -257,16 +253,12 @@ func (h *ProductHandler) CreateProduct() echo.HandlerFunc {
 }
 
 func (h *ProductHandler) validateCreateProductRequest(req *productusecase.CreateProductRequest) error {
-	if len(req.Name) == 0 {
-		return errors.New("name is required")
+	if req.Price < 0 {
+		return errors.New("price must be greater or equal to 0")
 	}
 
-	if req.Price <= 0 {
-		return errors.New("price must be greater than 0")
-	}
-
-	if req.SalePrice != nil && *req.SalePrice <= 0 {
-		return errors.New("sale price must be greater than 0")
+	if req.SalePrice != nil && *req.SalePrice < 0 {
+		return errors.New("sale price must be greater or equal to 0")
 	}
 
 	return nil
