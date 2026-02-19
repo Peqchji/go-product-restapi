@@ -9,27 +9,31 @@ import (
 	"go-product-restapi/pkg/logger"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5"
 )
+
+type IDBPool interface {
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+}
 
 type ProductRow struct {
 	ID          *uuid.UUID `db:"id,omitempty"`
-	Name        string    `db:"name"`
-	Description *string   `db:"description,omitempty"`
-	Price       float64   `db:"price"`
-	SalePrice   *float64  `db:"sale_price,omitempty"`
-	CreatedAt   time.Time `db:"created_at"`
-	UpdatedAt   time.Time `db:"updated_at"`
+	Name        string     `db:"name"`
+	Description *string    `db:"description,omitempty"`
+	Price       float64    `db:"price"`
+	SalePrice   *float64   `db:"sale_price,omitempty"`
+	CreatedAt   time.Time  `db:"created_at"`
+	UpdatedAt   time.Time  `db:"updated_at"`
 }
 
 type PostgresProductRepository struct {
-	db     *pgxpool.Pool
+	db     IDBPool
 	logger logger.ILogger
 	mapper repositories.ProductMapper[ProductRow]
 }
 
 func NewPostgresProductRepository(
-	db *pgxpool.Pool,
+	db IDBPool,
 	logger logger.ILogger,
 	productMapper repositories.ProductMapper[ProductRow],
 ) *PostgresProductRepository {
@@ -98,6 +102,6 @@ func (r *PostgresProductRepository) Save(ctx context.Context, product entity.Pro
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return r.mapper.ToEntity(productRow), nil
 }
